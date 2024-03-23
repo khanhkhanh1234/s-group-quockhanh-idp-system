@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Inject, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -7,6 +7,8 @@ import { RolesModule } from './roles/roles.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { SeedModule } from './seed/seed.module';
 @Module({
   imports: [
     AuthModule,
@@ -31,8 +33,14 @@ import { AuthModule } from './auth/auth.module';
         logging: true,
       }),
     }),
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(@Inject(CACHE_MANAGER) cacheManager) {
+    const client = cacheManager.store.getClient();
+    client.on('error', () => {});
+  }
+}

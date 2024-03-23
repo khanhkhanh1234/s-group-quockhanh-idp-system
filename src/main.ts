@@ -12,6 +12,7 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
   app.use(passport.initialize());
+  app.enableCors();
   await app.listen(3000);
 }
 bootstrap();

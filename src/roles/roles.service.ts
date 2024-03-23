@@ -67,4 +67,11 @@ export class RolesService {
       return new NotFoundException(`Role with id ${roleId} not found`);
     }
   }
+  async getRolesByUserId(userId: string) {
+    return await this.roleRepository
+      .createQueryBuilder('role')
+      .leftJoin('role.users', 'user')
+      .where('user.id = :userId', { userId: userId })
+      .getMany();
+  }
 }

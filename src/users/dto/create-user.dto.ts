@@ -26,10 +26,13 @@ export class CreateUserDto {
   @IsOptional()
   @IsDate()
   birthday?: Date;
+  age?: number;
 
   @IsOptional()
   @IsString()
   phoneNumber?: string;
+  @IsOptional()
+  updatedAt?: Date;
 
   @IsOptional()
   @IsArray()
