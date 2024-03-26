@@ -4,10 +4,12 @@ import {
   Post,
   Body,
   Param,
+  Req,
   Delete,
   UseGuards,
   Patch,
   SetMetadata,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,6 +17,8 @@ import { User } from './entities/user.entity';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { PermissionGuard } from 'src/auth/guard/permissions-guard';
 import { GuardWithoutLibrary } from 'src/auth/guard/jwt-without-library.guard';
+import { PaginationDto } from './dto/pagination.dto';
+import { FilterDto } from './dto/filter.dto';
 
 @Controller('users')
 export class UsersController {
@@ -29,8 +33,11 @@ export class UsersController {
   @Get()
   @UseGuards(GuardWithoutLibrary, PermissionGuard)
   @SetMetadata('permissions', ['read:user'])
-  async getAllUsers(pageNumber, pageSize): Promise<User[]> {
-    const users = await this.usersService.getAllUsers(pageNumber, pageSize);
+  async getAllUsers(
+    @Query() paginationDto: PaginationDto,
+    @Query() filterDto: FilterDto,
+  ): Promise<User[]> {
+    const users = await this.usersService.getAllUsers(paginationDto, filterDto);
     return users;
   }
   @UseGuards(GuardWithoutLibrary, PermissionGuard)
@@ -59,5 +66,10 @@ export class UsersController {
   @Post('seed')
   async seedUsers(): Promise<void> {
     await this.usersService.seedUsers();
+  }
+  @Get('me')
+  @UseGuards(GuardWithoutLibrary)
+  async getMe(@Req() req: Request): Promise<any> {
+    return await this.usersService.getMe(req);
   }
 }
